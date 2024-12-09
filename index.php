@@ -1,5 +1,10 @@
 <?php
 include 'connection.php';
+session_start();
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -13,30 +18,9 @@ include "includes/head.php"
     include "components/navbar.php";
     ?>
     <div id="layoutSidenav">
-        <div id="layoutSidenav_nav">
-            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-                <div class="sb-sidenav-menu">
-                    <div class="nav">
-                        <a class="nav-link" href="index.html">
-                            Home
-                        </a>
-                        <a class="nav-link" href="index.html">
-                            Peminjaman Alat
-                        </a>
-                        <a class="nav-link" href="index.html">
-                            Pengembalian Alat
-                        </a>
-                        <a class="nav-link" href="index.html">
-                            Alat Terdaftar
-                        </a>
-                    </div>
-                </div>
-                <div class="sb-sidenav-footer">
-                    <div class="small">Logged in as:</div>
-                    Admin
-                </div>
-            </nav>
-        </div>
+        <?php
+        include "components/sidebar.php";
+        ?>
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
@@ -58,12 +42,13 @@ include "includes/head.php"
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>Asep</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Sonny</td>
-                                            </tr>
+                                            <?php
+                                            $query = "SELECT DISTINCT borrower_name FROM logs";
+                                            $result = $koneksi->query($query);
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo "<tr><td>" . $row['borrower_name'] . "</td></tr>";
+                                            }
+                                            ?>
                                         </tbody>
                                     </table>
                                 </div>
@@ -83,17 +68,17 @@ include "includes/head.php"
                                             <tr>
                                                 <th>Nama Alat</th>
                                                 <th>Part Number</th>
+                                                <th>Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>Hammer</td>
-                                                <td>HT</td>
-                                            </tr>
-                                            <tr>
-                                                <td>PC001</td>
-                                                <td>PC002</td>
-                                            </tr>
+                                           <?php
+                                           $query = "SELECT * FROM tools";
+                                           $result = $koneksi->query($query);
+                                           while ($row = $result->fetch_assoc()) {
+                                                echo "<tr><td>" . $row['name'] . "</td><td>" . $row['part_number'] . "</td><td><span class='badge " . ($row['is_borrowed'] ? 'bg-warning text-dark' : 'bg-success') . "'>" . ($row['is_borrowed'] ? 'Dipinjam' : 'Tersedia') . "</span></td></tr>"      ;
+                                           }
+                                           ?>
                                         </tbody>
                                     </table>
                                 </div>
@@ -115,56 +100,36 @@ include "includes/head.php"
                                             <th>Nama Alat</th>
                                             <th>Part Number</th>
                                             <th>Tanggal Peminjaman</th>
-                                            <th>Tanggal Pengembalian</th>
+                                            <th>Kalibrasi</th>
+                                            <th>Registrasi Pesawat</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
+                                    
                                     <tbody>
-                                        <tr>
-                                            <td>PM001</td>
-                                            <td>Asep</td>
-                                            <td>Hammer</td>
-                                            <td>HT001</td>
-                                            <td>2023-12-01</td>
-                                            <td>2023-12-05</td>
-                                            <td>Dikembalikan</td>
-                                        </tr>
-                                        <tr>
-                                            <td>PM002</td>
-                                            <td>Sonny</td>
-                                            <td>Screwdriver</td>
-                                            <td>SD002</td>
-                                            <td>2023-12-03</td>
-                                            <td>2023-12-07</td>
-                                            <td>Dikembalikan</td>
-                                        </tr>
-                                        <tr>
-                                            <td>PM003</td>
-                                            <td>Andi</td>
-                                            <td>Drill</td>
-                                            <td>DR003</td>
-                                            <td>2023-12-04</td>
-                                            <td>2023-12-10</td>
-                                            <td>Belum Dikembalikan</td>
-                                        </tr>
-                                        <tr>
-                                            <td>PM004</td>
-                                            <td>Budi</td>
-                                            <td>Wrench</td>
-                                            <td>WR004</td>
-                                            <td>2023-12-05</td>
-                                            <td>2023-12-09</td>
-                                            <td>Dikembalikan</td>
-                                        </tr>
-                                        <tr>
-                                            <td>PM005</td>
-                                            <td>Citra</td>
-                                            <td>Multimeter</td>
-                                            <td>MM005</td>
-                                            <td>2023-12-06</td>
-                                            <td>2023-12-12</td>
-                                            <td>Belum Dikembalikan</td>
-                                        </tr>
+                                        <?php
+                                        $query = "SELECT l.id, l.borrower_name, t.name as tool_name, 
+                                                t.part_number, l.timestamp, l.calibration, 
+                                                l.aircraft_reg, t.is_borrowed, l.status 
+                                                FROM logs l
+                                                JOIN tools t ON l.tool_id = t.id";
+                                        $result = $koneksi->query($query);
+                                        while ($row = $result->fetch_assoc()) {
+                                            echo "<tr>
+                                                <td>" . $row['id'] . "</td>
+                                                <td>" . $row['borrower_name'] . "</td>
+                                                <td>" . $row['tool_name'] . "</td>
+                                                <td>" . $row['part_number'] . "</td>
+                                                <td>" . $row['timestamp'] . "</td>
+                                                <td>" . $row['calibration'] . "</td>
+                                                <td>" . $row['aircraft_reg'] . "</td>
+                                                    <td><span class='badge " . ($row['status'] == 'Dipinjam' ? "bg-warning text-dark" : "bg-success") . "'>" . 
+                                                        $row['status'] . 
+                                                    "</span>
+                                                </td>
+                                            </tr>";
+                                        }
+                                        ?>
                                     </tbody>
 
                                 </table>
@@ -187,7 +152,9 @@ include "includes/head.php"
         $(document).ready(function() {
             $('#borrowersTable').DataTable();
             $('#toolsTable').DataTable();
-            $('#logTable').DataTable();
+            $('#logTable').DataTable({
+                "order": [[4, "desc"]]
+            });
         });
     </script>
 </body>
