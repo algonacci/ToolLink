@@ -106,6 +106,13 @@ include "includes/head.php"
                                                 required>
                                         </div>
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label for="Jumlah" class="form-label">Jumlah</label>
+                                            <input type="number" class="form-control" id="Jumlah"
+                                                required>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="text-end">
                                     <button type="submit" name="submit" class="btn btn-primary">Pinjam Alat</button>

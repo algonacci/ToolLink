@@ -14,6 +14,9 @@
                 <a class="nav-link" href="tools_list.php">
                     Alat Terdaftar
                 </a>
+                <a class="nav-link" href="generate_qr.php">
+                    Generate QR
+                </a>
             </div>
         </div>
         <div class="sb-sidenav-footer">
