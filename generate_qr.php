@@ -93,12 +93,15 @@ include "includes/head.php";
                 const description = document.getElementById('description').value;
 
                 // Pastikan qrCodeText adalah string yang valid
-                const qrCodeText = `Name: ${name}\nPart Number: ${partNumber}\nDescription: ${description}`;
+                const qrCodeText = `${name},${partNumber},${description}`;
                 console.log("QR Code Text:", qrCodeText); // Debugging output
 
                 // Menggunakan library QRCode.js untuk menghasilkan QR Code sebagai URL (base64)
                 try {
-                    QRCode.toDataURL(qrCodeText, { errorCorrectionLevel: 'H', type: 'image/jpeg' }, function (error, url) {
+                    QRCode.toDataURL(qrCodeText, {
+                        errorCorrectionLevel: 'H',
+                        type: 'image/jpeg'
+                    }, function(error, url) {
                         if (error) {
                             console.error(error);
                             alert('An error occurred while generating QR code.');

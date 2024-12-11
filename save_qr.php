@@ -1,11 +1,21 @@
 <?php
 include 'connection.php';
 
-if (isset($_POST["name"]) && isset($_POST["part_number"]) && isset($_POST["description"])) {
+// Pastikan data 'data' terkirim dari Arduino
+if (isset($_POST["data"])) {
+    // Memisahkan data berdasarkan koma
+    $data = explode(",", $_POST["data"]);
 
-    $name = $_POST["name"];
-    $part_number = $_POST["part_number"];
-    $description = $_POST["description"];
+    // Pastikan jumlah elemen yang diterima sesuai dengan yang diharapkan
+    if (count($data) != 3) {
+        echo "Error: Data format tidak sesuai.";
+        exit;
+    }
+
+    // Mengambil nilai dari array yang dipisahkan
+    $name = trim($data[0]);
+    $part_number = trim($data[1]);
+    $description = trim($data[2]);
 
     // Menggunakan prepared statement untuk keamanan
     $stmt = $conn->prepare("INSERT INTO tools (name, part_number, description, is_borrowed) 
@@ -19,7 +29,8 @@ if (isset($_POST["name"]) && isset($_POST["part_number"]) && isset($_POST["descr
     }
 
     $stmt->close();
+} else {
+    echo "Error: Data 'data' tidak diterima.";
 }
 
 mysqli_close($conn);
-?>
