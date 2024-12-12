@@ -18,7 +18,7 @@ if (isset($_POST["data"])) {
     $description = trim($data[2]);
 
     // Menggunakan prepared statement untuk keamanan
-    $stmt = $conn->prepare("INSERT INTO tools (name, part_number, description, is_borrowed) 
+    $stmt = $$koneksi->prepare("INSERT INTO tools (name, part_number, description, is_borrowed) 
                             VALUES (?, ?, ?, 0)");
     $stmt->bind_param("sss", $name, $part_number, $description);
 
